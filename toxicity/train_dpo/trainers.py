@@ -191,10 +191,10 @@ def get_batch_logps(
     # [batch, seq]
     labels = input_ids[:, 1:].clone()
     logits = logits[:, :-1, :]
-    loss_mask = labels != GPT2_PAD_IDX
+    loss_mask = labels != -100
 
     # dummy token; we'll ignore the losses on these tokens later
-    labels[labels == GPT2_PAD_IDX] = 0
+    labels[labels == -100] = 0
 
     per_token_logps = torch.gather(
         logits.log_softmax(-1), dim=2, index=labels.unsqueeze(2)
@@ -785,24 +785,24 @@ class BasicTrainer(object):
         )
         del policy_state_dict
 
-        optimizer_state_dict = self.optimizer.state_dict()
-        self.write_state_dict(
-            self.example_counter,
-            optimizer_state_dict,
-            metrics,
-            "optimizer.pt",
-            output_dir,
-        )
-        del optimizer_state_dict
+        # optimizer_state_dict = self.optimizer.state_dict()
+        # self.write_state_dict(
+        #     self.example_counter,
+        #     optimizer_state_dict,
+        #     metrics,
+        #     "optimizer.pt",
+        #     output_dir,
+        # )
+        # del optimizer_state_dict
 
-        scheduler_state_dict = self.scheduler.state_dict()
-        self.write_state_dict(
-            self.example_counter,
-            scheduler_state_dict,
-            metrics,
-            "scheduler.pt",
-            output_dir,
-        )
+        # scheduler_state_dict = self.scheduler.state_dict()
+        # self.write_state_dict(
+        #     self.example_counter,
+        #     scheduler_state_dict,
+        #     metrics,
+        #     "scheduler.pt",
+        #     output_dir,
+        # )
 
 
 class FSDPTrainer(BasicTrainer):

@@ -2,13 +2,17 @@
 seed: 42
 
 # name for this experiment in the local run directory and on wandb
-exp_name: ???
+exp_name: dpo_toxic
+
+# path to save the trained model checkpoint (path to directory)
+save_path: /path/to/save/checkpoint/
+
 
 valid_size: 64
 # the batch size for training; for FSDP, the batch size per GPU is batch_size / (grad_accumulation_steps * num_gpus)
-batch_size: 4
+batch_size: 32
 # the batch size during evaluation and sampling, if enabled
-eval_batch_size: 8
+eval_batch_size: 1
 
 # debug mode (disables wandb, model checkpointing, etc.)
 debug: false
@@ -18,7 +22,7 @@ fsdp_port: null
 
 # wandb configuration
 wandb:
-  enabled: true
+  enabled: false
   entity: null
   project: "dpo-toxicity-pplm"
 
@@ -41,7 +45,7 @@ do_first_eval: false
 local_run_dir: ${get_local_run_dir:${exp_name},${local_dirs}}
 
 # the learning rate
-lr: 1e-6
+lr: 5e-6
 
 # number of steps to accumulate over for each batch
 #   (e.g. if batch_size=4 and gradient_accumulation_steps=2, then we will
@@ -59,29 +63,29 @@ max_new_tokens: 64
 max_prompt_length: 64
 
 # the number of epochs to train for; if null, must specify n_examples
-n_epochs: 5
+n_epochs: 1
 
 # the trainer class to use (e.g. BasicTrainer, FSDPTrainer, TensorParallelTrainer)
 trainer: BasicTrainer
 
 # The optimizer to use; we use RMSprop because it works about as well as Adam and is more memory-efficient
-optimizer: RMSprop
+optimizer: Adam
 
 # number of linear warmup steps for the learning rate
-warmup_steps: 150
+warmup_steps: 20
 
 # whether or not to use activation/gradient checkpointing
 activation_checkpointing: false
 
 # evaluate and save model every eval_every steps
-eval_every: 100
-save_every: 100
+eval_every: 999999
+save_every: 999999
 validation_metric: "loss/valid"
 validation_direction: "min"
 validation_patience: 30
 
 sample_during_eval: false
-sample_every: 2000
+sample_every: 999999
 
 # prevent wandb from logging more than once per minimum_log_interval_secs
 minimum_log_interval_secs: 2.0
@@ -89,4 +93,4 @@ minimum_log_interval_secs: 2.0
 defaults:
 - _self_
 - model: gpt2-medium
-- loss: dpo # which loss function, either sft or dpo (specify loss.beta if using dpo)
+- loss: sft # which loss function, either sft or dpo (specify loss.beta if using dpo)

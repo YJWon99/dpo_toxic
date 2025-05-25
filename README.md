@@ -1,4 +1,5 @@
-# Mechanistically Understanding DPO: Toxicity
+# AI707 Final Project
+## Mechanistically Understanding DPO: Toxicity
 
 This repository provides the models, data, and experiments used in [A Mechanistic Understanding of Alignment Algorithms: A Case Study on DPO and Toxicity](https://arxiv.org/abs/2401.01967).
 
@@ -18,10 +19,20 @@ To re-create any of our figures, see `./toxicity/eval_interventions/figures`.
 ## Training DPO
 
 To train your own dpo model:
-```
+```bash
 cd toxicity/train_dpo
-python train.py exp_name="[name of your experiment]"
+CUDA_VISIBLE_DEVICES=0 python train.py exp_name="[name of your experiment]"
 ```
+*Note: Training SFT and DPO models takes less than 10 minutes on a single A100 GPU.*
+
+## Sampling Responses
+See `./toxicity/train_dpo/sample_ratio.py` for details for the hyper-parameter setup.
+To sample from the DPO/SFT trained models, and the Pi_l distribution:
+```bash
+cd toxicity/train_dpo
+CUDA_VISIBLE_DEVICES=0 python sample_ratio.py > PATH_TO_PRINT_RESULTS.log # 
+```
+See `./sample_from_pil.log` for response samples.
 
 
 ## How to Cite

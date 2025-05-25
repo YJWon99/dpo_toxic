@@ -5,16 +5,10 @@ from typing import Dict, List, Optional, Iterator, Callable, Union, Tuple
 
 import os
 import json
-from collections import defaultdict
 import random
 from tqdm import tqdm
-import numpy as np
 import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
-from torch.nn.utils.rnn import pad_sequence
-from toxicity.train_dpo.dpo_utils import get_local_dir, TemporarilySeededRandom
-from constants import DATA_DIR, GPT2_PAD_IDX
+from constants import DATA_DIR
 
 
 def get_pplm_batch_iterator(
@@ -66,7 +60,7 @@ def get_pplm_batch_iterator(
         batch = [json.loads(x.strip()) for x in batch]
 
         prompt_text = [x["prompt_text"] for x in batch]
-        gold_text = [x["unpert_gen_text"] for x in batch]
+        gold_text = [x["unpert_gen_text"]+ tokenizer.eos_token for x in batch]
 
         prompt_tokenized = tokenizer(
             prompt_text,
@@ -90,7 +84,7 @@ def get_pplm_batch_iterator(
 
         pos_input_id = gold_tokenized["input_ids"].long()
 
-        pplm_text = [x["pert_gen_text"] for x in batch]
+        pplm_text = [x["pert_gen_text"] + tokenizer.eos_token for x in batch]
         pplm_tokenized = tokenizer(
             pplm_text,
             max_length=max_new_tokens,
